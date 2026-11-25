@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GPAForge — مخطط المعدل التراكمي</title>
+<meta name="description" content="احسب معدلك التراكمي واعرف محتاج كام عشان توصل لهدفك — Calculate your GPA and find what grades you need.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎓</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo">🎓</span>
+      <div>
+        <h1>GPAForge</h1>
+        <p class="tagline" data-i18n="tagline"></p>
+      </div>
+    </div>
+    <button id="langBtn" class="lang-btn" type="button">EN</button>
+  </header>
+
+  <main>
+    <!-- Current standing -->
+    <section class="card">
+      <h2 data-i18n="currentTitle"></h2>
+      <div class="grid2">
+        <label class="field">
+          <span data-i18n="currentGPA"></span>
+          <input id="oldGPA" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="2.50">
+        </label>
+        <label class="field">
+          <span data-i18n="currentHours"></span>
+          <input id="oldHours" type="number" inputmode="numeric" min="0" step="1" placeholder="60">
+        </label>
+      </div>
+      <p class="hint" data-i18n="newStudent"></p>
+    </section>
+
+    <!-- Tabs -->
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="calc" type="button" data-i18n="tabCalc"></button>
+      <button class="tab" data-tab="target" type="button" data-i18n="tabTarget"></button>
+      <button class="tab" data-tab="scale" type="button" data-i18n="tabScale"></button>
+    </nav>
+
+    <!-- Semester calculator -->
+    <section id="tab-calc" class="tabpanel">
+      <div class="card">
+        <div class="courses-head">
+          <span class="col-name" data-i18n="course"></span>
+          <span class="col-hours" data-i18n="hours"></span>
+          <span class="col-grade" data-i18n="grade"></span>
+          <span class="col-x"></span>
+        </div>
+        <div id="courseRows"></div>
+        <div class="row-actions">
+          <button id="addCourse" class="btn primary" type="button" data-i18n="addCourse"></button>
+          <button id="allA" class="btn ghost" type="button" data-i18n="allA"></button>
+          <button id="allB" class="btn ghost" type="button" data-i18n="allB"></button>
+          <button id="clearAll" class="btn ghost danger" type="button" data-i18n="clearAll"></button>
+        </div>
+      </div>
+
+      <div class="card results">
+        <div class="ring-wrap">
+          <svg class="ring" viewBox="0 0 120 120">
+            <circle class="ring-bg" cx="60" cy="60" r="52"></circle>
+            <circle id="ringFg" class="ring-fg" cx="60" cy="60" r="52"></circle>
+          </svg>
+          <div class="ring-center">
+            <div id="semGPA" class="ring-num">0.00</div>
+            <div class="ring-label" data-i18n="semGPA"></div>
+          </div>
+        </div>
+        <div class="stats">
+          <div class="stat"><span data-i18n="totalHours"></span><b id="totalHours">0</b></div>
+          <div class="stat"><span data-i18n="totalPoints"></span><b id="totalPoints">0.0</b></div>
+          <div class="stat"><span data-i18n="equivGrade"></span><b id="equivGrade" dir="ltr">—</b></div>
+          <div class="stat highlight" id="newCumWrap"><span data-i18n="newCum"></span><b id="newCum">—</b></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Target planner -->
+    <section id="tab-target" class="tabpanel hidden">
+      <div class="card">
+        <div class="grid2">
+          <label class="field">
+            <span data-i18n="targetGPA"></span>
+            <input id="targetGPA" type="number" inputmode="decimal" min="0" max="4" step="0.01" placeholder="3.00">
+          </label>
+          <label class="field">
+            <span data-i18n="nextHours"></span>
+            <input id="nextHours" type="number" inputmode="numeric" min="0" step="1" placeholder="15">
+          </label>
+        </div>
+        <label class="check">
+          <input id="useCourses" type="checkbox">
+          <span data-i18n="useCourses"></span>
+        </label>
+      </div>
+
+      <div id="needCard" class="card need-card">
+        <div class="need-top">
+          <div>
+            <div class="need-label" data-i18n="needLabel"></div>
+            <div id="needValue" class="need-value">—</div>
+            <div class="need-sub" data-i18n="inSem"></div>
+          </div>
+          <span id="needBadge" class="badge"></span>
+        </div>
+        <p id="needMsg" class="need-msg"></p>
+        <div class="scenarios">
+          <h3 data-i18n="scenarios"></h3>
+          <div id="scenarioRows"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Grade scale -->
+    <section id="tab-scale" class="tabpanel hidden">
+      <div class="card">
+        <div class="grid2">
+          <label class="field">
+            <span data-i18n="preset"></span>
+            <select id="presetSel"></select>
+          </label>
+          <div class="field reset-wrap">
+            <button id="resetScale" class="btn ghost" type="button" data-i18n="reset"></button>
+          </div>
+        </div>
+        <p class="hint" data-i18n="scaleNote"></p>
+        <div class="scale-head">
+          <span data-i18n="letter"></span><span data-i18n="minPct"></span><span data-i18n="points"></span>
+        </div>
+        <div id="scaleRows"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer" data-i18n="footer"></footer>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
